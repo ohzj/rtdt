@@ -1,0 +1,13 @@
+# Secrets y entorno
+.env
+__pycache__/
+*.pyc
+
+# Virtual envs
+venv/
+.venv/
+env/
+
+# Mac/Windows
+.DS_Store
+Thumbs.db
