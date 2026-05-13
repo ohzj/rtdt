@@ -1,3 +1,17 @@
+---
+title: Rtdt
+emoji: 🚀
+colorFrom: blue
+colorTo: gray
+sdk: gradio
+sdk_version: 6.14.0
+python_version: '3.13'
+app_file: app.py
+pinned: false
+license: mit
+short_description: ReadTheDamnTerms
+---
+
 # RTDT — Read The Damn Terms 🚀
 
 ## 📖 Descripción del proyecto
@@ -57,5 +71,11 @@ Puedes probar la aplicación en vivo desplegada en Hugging Face Spaces aquí:
 
 ## 📸 Capturas de pantalla de la app funcionando
 
-![Captura de Pantalla RTDT](https://raw.githubusercontent.com/ohzj/rtdt/master/assets/screenshot.png)
-*Interfaz principal de RTDT analizando un documento legal, mostrando las métricas y habilitando el chatbot de la parte inferior.*
+### 1. Ingresar Términos
+![Paso 1: Ingresar Términos](<assets/RTDT- 1 Ingresar Terminos.png>)
+
+### 2. Leer Análisis
+![Paso 2: Leer Análisis](<assets/RTDT- 2 Leer Analisis.png>)
+
+### 3. Chat y Preguntas Adicionales
+![Paso 3: Chat preguntas adicionales](<assets/RTDT- 3 Chat preguntas adicionales.png>)
