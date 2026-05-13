@@ -428,4 +428,10 @@ with gr.Blocks(title="RTDT — ReadTheDamnTerms") as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(css=CSS, theme=gr.themes.Default())
+    custom_theme = gr.themes.Default().set(
+        block_background_fill="white",
+        block_background_fill_dark="white",
+        panel_background_fill="white",
+        panel_background_fill_dark="white"
+    )
+    demo.launch(css=CSS, theme=custom_theme)
