@@ -138,50 +138,50 @@ def format_analysis_html(data: dict) -> str:
     red_flags_html = ""
     for rf in data.get("red_flags", []):
         red_flags_html += _item_row("🚩", rf.get("title",""), rf.get("detail",""), rf.get("quote",""), _severity_badge(rf.get("severity","medium")))
-    red_section = _section_card("Alertas Rojas", "🔴", "#ff4444", red_flags_html or "<p style='color:#666'>Ninguna identificada.</p>")
+    red_section = _section_card("Red Flags", "🔴", "#ff4444", red_flags_html or "<p style='color:#666'>None identified.</p>")
 
     # ── Data Collected ────────────────────────────────────────────────────────
     data_html = ""
     for dc in data.get("data_collected", []):
-        shared = f'<span style="color:#b45309;font-size:12px">Compartido con: {dc.get("shared_with","?")}</span>'
+        shared = f'<span style="color:#b45309;font-size:12px">Shared with: {dc.get("shared_with","?")}</span>'
         data_html += _item_row("📊", dc.get("category",""), dc.get("detail",""), badge=shared)
-    data_section = _section_card("Datos Recopilados", "📊", "#4466ff", data_html or "<p style='color:#666'>No especificado.</p>")
+    data_section = _section_card("Data Collected", "📊", "#4466ff", data_html or "<p style='color:#666'>Not specified.</p>")
 
     # ── Rights Given Up ───────────────────────────────────────────────────────
     rights_html = ""
     for r in data.get("rights_you_give_up", []):
         rights_html += _item_row("⚖️", r.get("right",""), r.get("detail",""), r.get("quote",""))
-    rights_section = _section_card("Derechos que Cedes", "⚖️", "#ff8800", rights_html or "<p style='color:#666'>Ninguno identificado.</p>")
+    rights_section = _section_card("Rights You Give Up", "⚖️", "#ff8800", rights_html or "<p style='color:#666'>None identified.</p>")
 
     # ── Financial Traps ───────────────────────────────────────────────────────
     fin_html = ""
     for ft in data.get("financial_traps", []):
         fin_html += _item_row("💰", ft.get("title",""), ft.get("detail",""), ft.get("quote",""))
-    fin_section = _section_card("Trampas Financieras", "💰", "#ffbb00", fin_html or "<p style='color:#666'>Ninguna identificada.</p>")
+    fin_section = _section_card("Financial Traps", "💰", "#ffbb00", fin_html or "<p style='color:#666'>None identified.</p>")
 
     # ── Data Retention + Jurisdiction ────────────────────────────────────────
     dr = data.get("data_retention", {})
     jur = data.get("jurisdiction", {})
-    arb = "✅ Sí" if jur.get("arbitration") else "❌ No"
-    caw = "✅ Sí" if jur.get("class_action_waiver") else "❌ No"
+    arb = "✅ Yes" if jur.get("arbitration") else "❌ No"
+    caw = "✅ Yes" if jur.get("class_action_waiver") else "❌ No"
     meta_body = f"""
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div>
-        <p style="color:#64748b;font-size:11px;margin:0 0 4px 0;text-transform:uppercase;letter-spacing:1px">Retención de Datos</p>
-        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{dr.get('duration','No especificado')}</p>
+        <p style="color:#64748b;font-size:11px;margin:0 0 4px 0;text-transform:uppercase;letter-spacing:1px">Data Retention</p>
+        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{dr.get('duration','Not specified')}</p>
         <p style="color:#475569;font-size:13px;margin:0">{dr.get('detail','')}</p>
       </div>
       <div>
-        <p style="color:#64748b;font-size:11px;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:1px">Jurisdicción</p>
-        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{jur.get('governing_law','No especificado')}</p>
-        <p style="color:#475569;font-size:12px;margin:0">Arbitraje obligatorio: {arb} &nbsp;|&nbsp; Sin demandas colectivas: {caw}</p>
+        <p style="color:#64748b;font-size:11px;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:1px">Jurisdiction</p>
+        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{jur.get('governing_law','Not specified')}</p>
+        <p style="color:#475569;font-size:12px;margin:0">Mandatory arbitration: {arb} &nbsp;|&nbsp; Class action waiver: {caw}</p>
       </div>
     </div>"""
-    meta_section = _section_card("Retención & Jurisdicción", "📅", "#00cc88", meta_body)
+    meta_section = _section_card("Retention & Jurisdiction", "📅", "#00cc88", meta_body)
 
     # ── Positives ─────────────────────────────────────────────────────────────
     pos_items = "".join(f'<li style="color:#475569;font-size:13px;margin-bottom:6px">{p}</li>' for p in data.get("positives", []))
-    pos_section = _section_card("Aspectos Positivos", "✅", "#059669", f'<ul style="margin:0;padding-left:20px">{pos_items}</ul>' if pos_items else "<p style='color:#94a3b8'>Ninguno identificado.</p>")
+    pos_section = _section_card("Positive Aspects", "✅", "#059669", f'<ul style="margin:0;padding-left:20px">{pos_items}</ul>' if pos_items else "<p style='color:#94a3b8'>None identified.</p>")
 
     return f'<div style="font-family:Inter,sans-serif;max-width:100%;color:#1e293b">{header}{red_section}{data_section}{rights_section}{fin_section}{meta_section}{pos_section}</div>'
 
@@ -194,7 +194,7 @@ def build_agent(system_prompt: str):
 
 def chat_respond(message, history, tos_text, analysis_data):
     if not tos_text:
-        history.append({"role": "assistant", "content": "⚠️ Primero analiza un documento de Términos de Servicio usando el panel de arriba."})
+        history.append({"role": "assistant", "content": "⚠️ First analyze a Terms of Service document using the panel above."})
         return "", history
 
     analysis_summary = json.dumps(analysis_data, ensure_ascii=False, indent=2)[:4000] if analysis_data else "{}"
@@ -221,7 +221,7 @@ def chat_respond(message, history, tos_text, analysis_data):
         last = result["messages"][-1]
         reply = last.content if hasattr(last, "content") else str(last)
     except Exception as e:
-        reply = f"Error al procesar: {e}"
+        reply = f"Error processing: {e}"
 
     history.append({"role": "user", "content": message})
     history.append({"role": "assistant", "content": reply})
@@ -232,7 +232,7 @@ def chat_respond(message, history, tos_text, analysis_data):
 CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
 
-*, body, .gradio-container { font-family: 'Inter', sans-serif !important; }
+*, body, .gradio-container { font-family: 'Inter', sans-serif !important; color: #0f172a !important; }
 .gradio-container { background: #f8fafc !important; }
 
 .rtdt-header {

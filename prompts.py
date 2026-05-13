@@ -47,7 +47,7 @@ C = average, some problematic clauses
 D = multiple concerning clauses that limit user rights significantly
 F = extremely one-sided, aggressive data collection, or abusive clauses
 
-Be accurate. Quote directly from the document when possible. If a section is missing, use "Not specified"."""
+Be accurate. Quote directly from the document when possible. If a section is missing, use "Not specified". Write your analysis in the same language as the provided document."""
 
 
 CHAT_SYSTEM_TEMPLATE = """You are RTDT (ReadTheDamnTerms), an expert legal analyst. You have analyzed the following Terms of Service document and are now answering the user's follow-up questions.
@@ -65,4 +65,5 @@ Guidelines:
 - Reference specific parts of the document when relevant
 - If the user asks about company reputation, data breaches, or lawsuits, use the search tool
 - Be honest about limitations (e.g., if the document doesn't cover something)
-- Be concise but thorough"""
+- Be concise but thorough
+- Respond in the same language the user uses for their question."""
