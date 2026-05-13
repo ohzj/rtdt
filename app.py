@@ -44,7 +44,7 @@ TOOLS = [search_web]
 # ── Analysis engine ───────────────────────────────────────────────────────────
 def analyze_tos(tos_text: str, service_name: str) -> dict:
     prompt = TOS_ANALYSIS_PROMPT.format(
-        service_name=service_name or "Unknown Service",
+        service_name=service_name or "Servicio Desconocido",
         tos_text=tos_text[:35_000],
     )
     try:
@@ -63,7 +63,7 @@ def analyze_tos(tos_text: str, service_name: str) -> dict:
             return json.loads(match.group())
         except json.JSONDecodeError:
             pass
-    return {"error": "Could not parse analysis", "raw": raw[:500]}
+    return {"error": "No se pudo procesar el análisis", "raw": raw[:500]}
 
 
 # ── HTML formatter ────────────────────────────────────────────────────────────
@@ -126,7 +126,7 @@ def format_analysis_html(data: dict) -> str:
       </div>
       <div style="text-align:center;background:{bg};border:2px solid {fg};border-radius:16px;padding:12px 24px;min-width:90px">
         <div style="font-size:48px;font-weight:900;color:{fg};line-height:1">{grade}</div>
-        <div style="font-size:11px;color:{fg};text-transform:uppercase;letter-spacing:1px;margin-top:4px">Privacy Score</div>
+        <div style="font-size:11px;color:{fg};text-transform:uppercase;letter-spacing:1px;margin-top:4px">Puntuación de Privacidad</div>
       </div>
     </div>
     <div style="background:#f8fafc;border-left:4px solid {fg};border-radius:8px;padding:14px 18px;margin-bottom:20px;color:#334155;font-size:14px;line-height:1.6">
@@ -138,50 +138,50 @@ def format_analysis_html(data: dict) -> str:
     red_flags_html = ""
     for rf in data.get("red_flags", []):
         red_flags_html += _item_row("🚩", rf.get("title",""), rf.get("detail",""), rf.get("quote",""), _severity_badge(rf.get("severity","medium")))
-    red_section = _section_card("Red Flags", "🔴", "#ff4444", red_flags_html or "<p style='color:#666'>None identified.</p>")
+    red_section = _section_card("Alertas Rojas", "🔴", "#ff4444", red_flags_html or "<p style='color:#666'>Ninguna identificada.</p>")
 
     # ── Data Collected ────────────────────────────────────────────────────────
     data_html = ""
     for dc in data.get("data_collected", []):
-        shared = f'<span style="color:#b45309;font-size:12px">Shared with: {dc.get("shared_with","?")}</span>'
+        shared = f'<span style="color:#b45309;font-size:12px">Compartido con: {dc.get("shared_with","?")}</span>'
         data_html += _item_row("📊", dc.get("category",""), dc.get("detail",""), badge=shared)
-    data_section = _section_card("Data Collected", "📊", "#4466ff", data_html or "<p style='color:#666'>Not specified.</p>")
+    data_section = _section_card("Datos Recopilados", "📊", "#4466ff", data_html or "<p style='color:#666'>No especificado.</p>")
 
     # ── Rights Given Up ───────────────────────────────────────────────────────
     rights_html = ""
     for r in data.get("rights_you_give_up", []):
         rights_html += _item_row("⚖️", r.get("right",""), r.get("detail",""), r.get("quote",""))
-    rights_section = _section_card("Rights You Give Up", "⚖️", "#ff8800", rights_html or "<p style='color:#666'>None identified.</p>")
+    rights_section = _section_card("Derechos que Cedes", "⚖️", "#ff8800", rights_html or "<p style='color:#666'>Ninguno identificado.</p>")
 
     # ── Financial Traps ───────────────────────────────────────────────────────
     fin_html = ""
     for ft in data.get("financial_traps", []):
         fin_html += _item_row("💰", ft.get("title",""), ft.get("detail",""), ft.get("quote",""))
-    fin_section = _section_card("Financial Traps", "💰", "#ffbb00", fin_html or "<p style='color:#666'>None identified.</p>")
+    fin_section = _section_card("Trampas Financieras", "💰", "#ffbb00", fin_html or "<p style='color:#666'>Ninguna identificada.</p>")
 
     # ── Data Retention + Jurisdiction ────────────────────────────────────────
     dr = data.get("data_retention", {})
     jur = data.get("jurisdiction", {})
-    arb = "✅ Yes" if jur.get("arbitration") else "❌ No"
-    caw = "✅ Yes" if jur.get("class_action_waiver") else "❌ No"
+    arb = "✅ Sí" if jur.get("arbitration") else "❌ No"
+    caw = "✅ Sí" if jur.get("class_action_waiver") else "❌ No"
     meta_body = f"""
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div>
-        <p style="color:#64748b;font-size:11px;margin:0 0 4px 0;text-transform:uppercase;letter-spacing:1px">Data Retention</p>
-        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{dr.get('duration','Not specified')}</p>
+        <p style="color:#64748b;font-size:11px;margin:0 0 4px 0;text-transform:uppercase;letter-spacing:1px">Retención de Datos</p>
+        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{dr.get('duration','No especificado')}</p>
         <p style="color:#475569;font-size:13px;margin:0">{dr.get('detail','')}</p>
       </div>
       <div>
-        <p style="color:#64748b;font-size:11px;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:1px">Jurisdiction</p>
-        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{jur.get('governing_law','Not specified')}</p>
-        <p style="color:#475569;font-size:12px;margin:0">Mandatory arbitration: {arb} &nbsp;|&nbsp; Class action waiver: {caw}</p>
+        <p style="color:#64748b;font-size:11px;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:1px">Jurisdicción</p>
+        <p style="color:#0f172a;margin:0 0 4px 0;font-weight:600">{jur.get('governing_law','No especificado')}</p>
+        <p style="color:#475569;font-size:12px;margin:0">Arbitraje obligatorio: {arb} &nbsp;|&nbsp; Sin demandas colectivas: {caw}</p>
       </div>
     </div>"""
-    meta_section = _section_card("Retention & Jurisdiction", "📅", "#00cc88", meta_body)
+    meta_section = _section_card("Retención & Jurisdicción", "📅", "#00cc88", meta_body)
 
     # ── Positives ─────────────────────────────────────────────────────────────
     pos_items = "".join(f'<li style="color:#475569;font-size:13px;margin-bottom:6px">{p}</li>' for p in data.get("positives", []))
-    pos_section = _section_card("Positive Aspects", "✅", "#059669", f'<ul style="margin:0;padding-left:20px">{pos_items}</ul>' if pos_items else "<p style='color:#94a3b8'>None identified.</p>")
+    pos_section = _section_card("Aspectos Positivos", "✅", "#059669", f'<ul style="margin:0;padding-left:20px">{pos_items}</ul>' if pos_items else "<p style='color:#94a3b8'>Ninguno identificado.</p>")
 
     return f'<div style="font-family:Inter,sans-serif;max-width:100%;color:#1e293b">{header}{red_section}{data_section}{rights_section}{fin_section}{meta_section}{pos_section}</div>'
 
@@ -194,11 +194,11 @@ def build_agent(system_prompt: str):
 
 def chat_respond(message, history, tos_text, analysis_data):
     if not tos_text:
-        history.append({"role": "assistant", "content": "⚠️ First analyze a Terms of Service document using the panel above."})
+        history.append({"role": "assistant", "content": "⚠️ Primero analiza un documento de Términos de Servicio usando el panel de arriba."})
         return "", history
 
     analysis_summary = json.dumps(analysis_data, ensure_ascii=False, indent=2)[:4000] if analysis_data else "{}"
-    service_name = analysis_data.get("service_name", "Unknown") if analysis_data else "Unknown"
+    service_name = analysis_data.get("service_name", "Desconocido") if analysis_data else "Desconocido"
 
     system_prompt = CHAT_SYSTEM_TEMPLATE.format(
         service_name=service_name,
@@ -221,7 +221,7 @@ def chat_respond(message, history, tos_text, analysis_data):
         last = result["messages"][-1]
         reply = last.content if hasattr(last, "content") else str(last)
     except Exception as e:
-        reply = f"Error processing: {e}"
+        reply = f"Error al procesar: {e}"
 
     history.append({"role": "user", "content": message})
     history.append({"role": "assistant", "content": reply})
@@ -330,7 +330,7 @@ def run_url(url, svc):
 def run_text(raw, svc):
     if not raw.strip():
         return gr.update(), gr.update(visible=False), gr.update(visible=False), "", {}
-    data = analyze_tos(raw, svc or "Pasted Document")
+    data = analyze_tos(raw, svc or "Documento Pegado")
     return gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), raw, data
 
 
@@ -343,7 +343,7 @@ def run_pdf(pdf_file, svc):
     if err:
         html = f'<div style="background:#2e0d0d;border:1px solid #ff4444;border-radius:12px;padding:20px;color:#ff8888;font-family:Inter,sans-serif">❌ {err}</div>'
         return gr.update(value=html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
-    data = analyze_tos(text, svc or "Uploaded PDF")
+    data = analyze_tos(text, svc or "PDF Subido")
     return gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), text, data
 
 
@@ -356,7 +356,7 @@ with gr.Blocks(title="RTDT — ReadTheDamnTerms") as demo:
     <div class="rtdt-header">
         <div class="rtdt-logo">RTDT</div>
         <h1 class="rtdt-title">Read<span>The</span>DamnTerms</h1>
-        <p class="rtdt-subtitle">Stop blindly agreeing. Know exactly what you're signing away.</p>
+        <p class="rtdt-subtitle">Deja de aceptar a ciegas. Conoce exactamente a qué estás accediendo.</p>
     </div>
     """)
 
@@ -365,35 +365,35 @@ with gr.Blocks(title="RTDT — ReadTheDamnTerms") as demo:
     with gr.Group(elem_classes="input-panel"):
         with gr.Tabs():
             with gr.TabItem("🌐 URL"):
-                url_input = gr.Textbox(label="Terms of Service URL", placeholder="https://example.com/terms", show_label=True)
-                svc_url = gr.Textbox(label="Service name (optional)", placeholder="e.g. Spotify")
-                btn_url = gr.Button("🔍 Analyze Terms", elem_classes="analyze-btn")
+                url_input = gr.Textbox(label="URL de Términos de Servicio", placeholder="https://ejemplo.com/terminos", show_label=True)
+                svc_url = gr.Textbox(label="Nombre del servicio (opcional)", placeholder="ej. Spotify")
+                btn_url = gr.Button("🔍 Analizar Términos", elem_classes="analyze-btn")
 
-            with gr.TabItem("📋 Paste Text"):
-                text_input = gr.Textbox(label="Paste the Terms of Service text", lines=10, placeholder="Paste the full ToS / Privacy Policy text here...")
-                svc_text = gr.Textbox(label="Service name (optional)", placeholder="e.g. Netflix")
-                btn_text = gr.Button("🔍 Analyze Terms", elem_classes="analyze-btn")
+            with gr.TabItem("📋 Pegar Texto"):
+                text_input = gr.Textbox(label="Pega el texto de los Términos de Servicio", lines=10, placeholder="Pega el texto completo de los ToS / Política de Privacidad aquí...")
+                svc_text = gr.Textbox(label="Nombre del servicio (opcional)", placeholder="ej. Netflix")
+                btn_text = gr.Button("🔍 Analizar Términos", elem_classes="analyze-btn")
 
-            with gr.TabItem("📄 Upload PDF"):
-                pdf_input = gr.File(label="Upload PDF", file_types=[".pdf"])
-                svc_pdf = gr.Textbox(label="Service name (optional)", placeholder="e.g. OpenAI")
-                btn_pdf = gr.Button("🔍 Analyze Terms", elem_classes="analyze-btn")
+            with gr.TabItem("📄 Subir PDF"):
+                pdf_input = gr.File(label="Subir PDF", file_types=[".pdf"])
+                svc_pdf = gr.Textbox(label="Nombre del servicio (opcional)", placeholder="ej. OpenAI")
+                btn_pdf = gr.Button("🔍 Analizar Términos", elem_classes="analyze-btn")
 
     # ── Report ────────────────────────────────────────────────────────────────
-    gr.HTML('<div class="section-label">📋 Analysis Report</div>')
+    gr.HTML('<div class="section-label">📋 Reporte de Análisis</div>')
     report_html = gr.HTML(visible=False)
 
     # ── Chat ──────────────────────────────────────────────────────────────────
-    gr.HTML('<div class="section-label">💬 Ask Follow-up Questions</div>')
+    gr.HTML('<div class="section-label">💬 Haz preguntas de seguimiento</div>')
     with gr.Group(visible=False) as chat_group:
         chatbot = gr.Chatbot(
-            label="Chat with RTDT",
+            label="Chatea con RTDT",
             height=400,
             elem_classes="chatbot-wrap",
         )
         with gr.Row():
-            chat_input = gr.Textbox(label="", placeholder="Ask about specific clauses, your rights, data usage...", scale=5, show_label=False)
-            send_btn = gr.Button("Send →", scale=1, variant="primary")
+            chat_input = gr.Textbox(label="", placeholder="Pregunta sobre cláusulas específicas, tus derechos, uso de datos...", scale=5, show_label=False)
+            send_btn = gr.Button("Enviar →", scale=1, variant="primary")
 
     chat_vis = gr.Column(visible=False)  # dummy to track visibility
 
