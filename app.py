@@ -318,33 +318,52 @@ input[type=text]:focus, textarea:focus { border-color: #3b82f6 !important; }
 # ── UI ────────────────────────────────────────────────────────────────────────
 def run_url(url, svc):
     if not url.strip():
-        return gr.update(), gr.update(visible=False), gr.update(visible=False), "", {}
+        yield gr.update(), gr.update(visible=False), gr.update(visible=False), "", {}
+        return
+        
+    loading_html = '<div style="padding:40px;text-align:center;color:#64748b;font-family:Inter,sans-serif"><h3 style="margin:0;color:#0f172a">⏳ Analizando...</h3><p style="margin:8px 0 0 0">Leyendo y procesando el documento, esto puede tomar unos segundos.</p></div>'
+    yield gr.update(value=loading_html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
+
     text, err = fetch_url_content(url)
     if err:
         html = f'<div style="background:#2e0d0d;border:1px solid #ff4444;border-radius:12px;padding:20px;color:#ff8888;font-family:Inter,sans-serif">❌ {err}</div>'
-        return gr.update(value=html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
+        yield gr.update(value=html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
+        return
+        
     data = analyze_tos(text, svc or url)
-    return gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), text, data
+    yield gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), text, data
 
 
 def run_text(raw, svc):
     if not raw.strip():
-        return gr.update(), gr.update(visible=False), gr.update(visible=False), "", {}
+        yield gr.update(), gr.update(visible=False), gr.update(visible=False), "", {}
+        return
+        
+    loading_html = '<div style="padding:40px;text-align:center;color:#64748b;font-family:Inter,sans-serif"><h3 style="margin:0;color:#0f172a">⏳ Analizando...</h3><p style="margin:8px 0 0 0">Leyendo y procesando el documento, esto puede tomar unos segundos.</p></div>'
+    yield gr.update(value=loading_html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
+
     data = analyze_tos(raw, svc or "Documento Pegado")
-    return gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), raw, data
+    yield gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), raw, data
 
 
 def run_pdf(pdf_file, svc):
     if pdf_file is None:
-        return gr.update(), gr.update(visible=False), gr.update(visible=False), "", {}
+        yield gr.update(), gr.update(visible=False), gr.update(visible=False), "", {}
+        return
+        
+    loading_html = '<div style="padding:40px;text-align:center;color:#64748b;font-family:Inter,sans-serif"><h3 style="margin:0;color:#0f172a">⏳ Analizando...</h3><p style="margin:8px 0 0 0">Leyendo y procesando el documento, esto puede tomar unos segundos.</p></div>'
+    yield gr.update(value=loading_html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
+
     with open(pdf_file, "rb") as f:
         raw_bytes = f.read()
     text, err = extract_pdf_text(raw_bytes)
     if err:
         html = f'<div style="background:#2e0d0d;border:1px solid #ff4444;border-radius:12px;padding:20px;color:#ff8888;font-family:Inter,sans-serif">❌ {err}</div>'
-        return gr.update(value=html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
+        yield gr.update(value=html, visible=True), gr.update(visible=False), gr.update(visible=False), "", {}
+        return
+        
     data = analyze_tos(text, svc or "PDF Subido")
-    return gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), text, data
+    yield gr.update(value=format_analysis_html(data), visible=True), gr.update(visible=True), gr.update(visible=True), text, data
 
 
 with gr.Blocks(title="RTDT — ReadTheDamnTerms") as demo:
